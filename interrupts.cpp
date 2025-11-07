@@ -15,6 +15,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
     std::string execution = "";  //!< string to accumulate the execution output
     std::string system_status = "";  //!< string to accumulate the system status output
     int current_time = time;
+    const int CONTEXT_SAVE_TIME = 10; // context save time (ms)
+    const int ISR_ACTIVITY_TIME = 40; // typical ISR duration (ms)
 
     //parse each line of the input trace file. 'for' loop to keep track of indices.
     for(size_t i = 0; i < trace_file.size(); i++) {
@@ -30,8 +32,41 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             execution += intr;
             current_time = time;
 
-            execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", SYSCALL ISR (ADD STEPS HERE)\n";
-            current_time += delays[duration_intr];
+            int total_isr = delays[duration_intr];
+
+        if (total_isr <= ISR_ACTIVITY_TIME) {
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(total_isr) + ", SYSCALL: run ISR for device " +
+                        std::to_string(duration_intr) + "\n";
+            current_time += total_isr;
+        } 
+        else if (total_isr <= 2 * ISR_ACTIVITY_TIME) {
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(ISR_ACTIVITY_TIME) + ", SYSCALL: run ISR for device " +
+                        std::to_string(duration_intr) + "\n";
+            current_time += ISR_ACTIVITY_TIME;
+
+            int remaining = total_isr - ISR_ACTIVITY_TIME;
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(remaining) + ", transfer device data to memory\n";
+            current_time += remaining;
+        } 
+        else {
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(ISR_ACTIVITY_TIME) + ", SYSCALL: run ISR for device " +
+                        std::to_string(duration_intr) + "\n";
+            current_time += ISR_ACTIVITY_TIME;
+
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(ISR_ACTIVITY_TIME) + ", transfer device data to memory\n";
+            current_time += ISR_ACTIVITY_TIME;
+
+            int remaining = total_isr - 2 * ISR_ACTIVITY_TIME;
+            execution += std::to_string(current_time) + ", " +
+                        std::to_string(remaining) + ", finalize ISR and check errors\n";
+            current_time += remaining;
+        }
+
 
             execution +=  std::to_string(current_time) + ", 1, IRET\n";
             current_time += 1;
@@ -40,8 +75,23 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             current_time = time;
             execution += intr;
 
-            execution += std::to_string(current_time) + ", " + std::to_string(delays[duration_intr]) + ", ENDIO ISR(ADD STEPS HERE)\n";
-            current_time += delays[duration_intr];
+            int total_isr = delays[duration_intr];
+
+            if (total_isr <= ISR_ACTIVITY_TIME) {
+                execution += std::to_string(current_time) + ", " +
+                            std::to_string(total_isr) + ", ENDIO: run the ISR (device driver)\n";
+                current_time += total_isr;
+            } 
+            else {
+                execution += std::to_string(current_time) + ", " +
+                            std::to_string(ISR_ACTIVITY_TIME) + ", ENDIO: run the ISR (device driver)\n";
+                current_time += ISR_ACTIVITY_TIME;
+
+                int diff = total_isr - ISR_ACTIVITY_TIME;
+                execution += std::to_string(current_time) + ", " +
+                            std::to_string(diff) + ", check device status\n";
+                current_time += diff;
+            }
 
             execution +=  std::to_string(current_time) + ", 1, IRET\n";
             current_time += 1;
@@ -189,6 +239,8 @@ int main(int argc, char** argv) {
     std::vector<PCB> wait_queue;
 
     /******************ADD YOUR VARIABLES HERE*************************/
+    const int CONTEXT_SAVE_TIME = 10; // context save time (ms)
+    const int ISR_ACTIVITY_TIME = 40; // typical ISR duration (ms)
 
 
     /******************************************************************/
