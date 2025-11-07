@@ -1,6 +1,8 @@
 /**
  *
  * @file interrupts.cpp
+ * @author 101302106 - Akshavi Baskaran
+ * @author 101315124 - Liam Addie
  * @author Sasisekhar Govind
  *
  */
