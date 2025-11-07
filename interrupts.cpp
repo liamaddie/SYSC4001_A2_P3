@@ -17,7 +17,7 @@
      std::string system_status = "";  //!< string to accumulate the system status output
      int current_time = time;
     int cntxt_time = 10; // default 10ms for saving context
-    int isr_activity = 40; // default 40ms for interrupt activity
+    int isr_activity_time = 40; // default 40ms for interrupt activity
 
  
      //parse each line of the input trace file. 'for' loop to keep track of indices.
@@ -42,24 +42,24 @@
             int total_isr = delays[duration_intr];
 
             // Execution statements based on total_isr time, taken from old assignment 1 solution
-            if (total_isr <= isr_activity){
+            if (total_isr <= isr_activity_time){ // if total_isr fits within the isr_activity_time, just one statement
                 execution += std::to_string(current_time) + ", " + std::to_string(total_isr) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
                 current_time += total_isr;
-            } else if (total_isr <= 2 * isr_activity){
-                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
-                current_time += isr_activity;
+            } else if (total_isr <= 2 * isr_activity_time){ // if total_isr fits within two isr_activity_time, two statements
+                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity_time) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
+                current_time += isr_activity_time;
 
-                int remaining = total_isr - isr_activity;
+                int remaining = total_isr - isr_activity_time;
                 execution += std::to_string(current_time) + ", " + std::to_string(remaining) + ", transfer device data to memory\n";
                 current_time += remaining;
-            } else {
-                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
-                current_time += isr_activity;
+            } else { // else, three statements
+                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity_time) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
+                current_time += isr_activity_time;
 
-                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity) + ", transfer device data to memory\n";
-                current_time += isr_activity;
+                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity_time) + ", transfer device data to memory\n";
+                current_time += isr_activity_time;
 
-                int remaining = total_isr - 2 * isr_activity;
+                int remaining = total_isr - 2 * isr_activity_time;
                 execution += std::to_string(current_time) + ", " + std::to_string(remaining) + ", SYSCALL: finalize ISR for device, check errors\n";
                 current_time += remaining;
             }
@@ -79,14 +79,14 @@
             // ISR body (wait time for that device)
             int total_isr = delays[duration_intr];
 
-            if(total_isr <= isr_activity){
+            if(total_isr <= isr_activity_time){
                 execution += std::to_string(current_time) + ", " + std::to_string(total_isr) + ", ENDIO: run the ISR (device driver)\n";
                 current_time += total_isr;
             } else{
-                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity) + ", ENDIO: run the ISR (device driver)\n";
-                current_time += isr_activity;
+                execution += std::to_string(current_time) + ", " + std::to_string(isr_activity_time) + ", ENDIO: run the ISR (device driver)\n";
+                current_time += isr_activity_time;
 
-                int diff = total_isr - isr_activity;
+                int diff = total_isr - isr_activity_time;
                 execution += std::to_string(current_time) + ", " + std::to_string(diff) + ", check device status\n";
 
                 current_time += diff;
