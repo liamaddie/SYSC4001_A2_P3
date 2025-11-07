@@ -52,8 +52,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Add your FORK output here
-            
-
+            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", cloning the PCB \n";
+            current_time += duration_intr;
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
