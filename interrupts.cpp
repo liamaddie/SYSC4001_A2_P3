@@ -106,11 +106,41 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Add your EXEC output here
+            unsigned int program_size = get_size(program_name, external_files);
+            if (program_size == (unsigned int) -1) {
+                std::cerr << "ERROR! " << program_name << " not found" << std::endl; 
+                return {execution, system_status, current_time};
+            }
+            // Allocate memory to program
+            free_memory(&current);
+            current.program_name = program_name;
+            current.size = program_size;
+            if(!allocate_memory(&current)) {
+                std::cerr << "ERROR! Memory allocation failed for EXEC " << program_name << std::endl;
+            }
 
+            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(program_size) + " MB\n";
+            current_time += duration_intr;
 
+            // Simulate loading time
+            int loader_time = program_size * 15;
+            execution += std::to_string(current_time) + ", " + std::to_string(loader_time) + ", loading program into memory\n";
+            current_time += loader_time;
+
+            execution += std::to_string(current_time) + ", 3, marking partition as occupied\n";
+            current_time += 3;
+
+            execution += std::to_string(current_time) + ", 6, updating PCB\n";
+            current_time += 6;
+
+            execution += std::to_string(current_time) + ", 0, scheduler called\n";
+            execution += std::to_string(current_time) + ", 1, IRET\n"; 
+            current_time += 1;
+
+            system_status += "time: " + std::to_string(current_time) + "; current trace: EXEC " + program_name + ", " + std::to_string(duration_intr) + "\n";
+            system_status += print_PCB(current, wait_queue);
 
             ///////////////////////////////////////////////////////////////////////////////////////////
-
 
             std::ifstream exec_trace_file(program_name + ".txt");
 
@@ -123,7 +153,8 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             ///////////////////////////////////////////////////////////////////////////////////////////
             //With the exec's trace (i.e. trace of external program), run the exec (HINT: think recursion)
 
-
+            auto [execution, system_status, time_sub] = simulate_trace(exec_traces, current_time, vectors, delays, external_files, current, wait_queue);
+            current_time = time_sub;
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
