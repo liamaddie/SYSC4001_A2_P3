@@ -150,7 +150,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
                 std::cerr << "ERROR! Memory allocation failed for EXEC " << program_name << std::endl;
             }
 
-            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(program_size) + " MB\n";
+            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(program_size) + " Mb\n";
             current_time += duration_intr;
 
             // Simulate loading time
@@ -211,7 +211,7 @@ int main(int argc, char** argv) {
     print_external_files(external_files);
 
     //Make initial PCB (notice how partition is not assigned yet)
-    PCB current(0, -1, "init", 1, -1);
+    PCB current(0, -1, "init", 1, 6);
     //Update memory (partition is assigned here, you must implement this function)
     if(!allocate_memory(&current)) {
         std::cerr << "ERROR! Memory allocation failed!" << std::endl;
