@@ -52,8 +52,21 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Add your FORK output here
+            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", cloning the PCB \n";
+            current_time += duration_intr;
 
+            // Creating the child PCB
+            PCB child (current.PID + 1, current.PID, current.program_name, current.size, current.partition_number);
+            wait_queue.push_back(current); // parent stops running, goes to wait queue
 
+            //  Calling the scheduler to pick next process
+            execution += std::to_string(current_time) + ", 0, scheduler called\n";
+            execution += std::to_string(current_time) + ", 1, IRET\n";
+            current_time += 1;
+
+            // Output of the system status after FORK
+            system_status += "time: " + std::to_string(current_time) + " current trace: FORK," + std::to_string(duration_intr) + "\n";
+            system_status += print_PCB(child, wait_queue);
 
             ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -93,7 +106,25 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
 
             ///////////////////////////////////////////////////////////////////////////////////////////
             //With the child's trace, run the child (HINT: think recursion)
+            auto [child_execution, child_system_status, child_end_time] = simulate_trace(   child_trace, 
+                                                                    current_time, 
+                                                                    vectors, 
+                                                                    delays, 
+                                                                    external_files, 
+                                                                    child, 
+                                                                    wait_queue);
+            
 
+            execution += child_execution; // adding the child's execution statements 
+            system_status += child_system_status; // adding the child's system status statements
+            current_time = child_end_time; // adding the child's end time to the current time 
+
+            wait_queue.pop_back(); // remove parent from waiting queue
+            execution += std::to_string(current_time) + ", 2, child process finished; parent resumes\n";
+
+            // Restore parent from wait queue
+            current = wait_queue.back();
+            wait_queue.pop_back();
 
 
             ///////////////////////////////////////////////////////////////////////////////////////////
