@@ -41,7 +41,7 @@
             // ISR body (wait time for that device)
             int total_isr = delays[duration_intr];
 
-            // Execution statements based on total_isr time
+            // Execution statements based on total_isr time, taken from old assignment 1 solution
             if (total_isr <= isr_activity){
                 execution += std::to_string(current_time) + ", " + std::to_string(total_isr) + ", SYSCALL: run ISR for device " + std::to_string(duration_intr) + "\n";
                 current_time += total_isr;
