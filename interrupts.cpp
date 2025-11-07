@@ -6,7 +6,7 @@
  * @author Liam Addie
  */
 
- #include "interrupts.hpp"
+ #include <interrupts.hpp>
 
  static unsigned int next_pid = 1; // PID counter to assign PIDs to new processes
 
