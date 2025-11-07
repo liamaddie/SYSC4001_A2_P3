@@ -214,7 +214,7 @@
              unsigned int new_size = get_size(program_name, external_files);
              
              // Logging the program size
-             execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(new_size) + " Mb large\n";
+             execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(new_size) + " MB large\n";
              current_time += duration_intr;
              
              // Freeing current process's memory
