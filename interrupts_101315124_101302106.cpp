@@ -1,12 +1,12 @@
 /**
  *
- * @file interrupts.cpp
+ * @file interrupts_101315124_101302106.cpp
  * @author Sasisekhar Govind
  * @author Akshavi Baskaran
  * @author Liam Addie
  */
 
- #include <interrupts.hpp>
+ #include <interrupts_101315124_101302106.hpp>
 
  static unsigned int next_pid = 1; // PID counter to assign PIDs to new processes
 
