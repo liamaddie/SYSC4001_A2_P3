@@ -288,57 +288,57 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             break; //Why is this important? (answer in report)
 
         }
-     }
+    }
  
-     return {execution, system_status, current_time};
+    return {execution, system_status, current_time};
  }
  
- int main(int argc, char** argv) {
- 
-     //vectors is a C++ std::vector of strings that contain the address of the ISR
-     //delays  is a C++ std::vector of ints that contain the delays of each device
-     //the index of these elemens is the device number, starting from 0
-     //external_files is a C++ std::vector of the struct 'external_file'. Check the struct in 
-     //interrupt.hpp to know more.
-     auto [vectors, delays, external_files] = parse_args(argc, argv);
-     std::ifstream input_file(argv[1]);
- 
-     //Just a sanity check to know what files you have
-     print_external_files(external_files);
- 
-     //Make initial PCB (notice how partition is not assigned yet)
-     PCB current(0, -1, "init", 1, -1);
-     //Update memory (partition is assigned here, you must implement this function)
-     if(!allocate_memory(&current)) {
-         std::cerr << "ERROR! Memory allocation failed!" << std::endl;
-     }
- 
-     std::vector<PCB> wait_queue;
- 
-     /******************ADD YOUR VARIABLES HERE*************************/
- 
- 
-     /******************************************************************/
- 
-     //Converting the trace file into a vector of strings.
-     std::vector<std::string> trace_file;
-     std::string trace;
-     while(std::getline(input_file, trace)) {
-         trace_file.push_back(trace);
-     }
- 
-     auto [execution, system_status, _] = simulate_trace(   trace_file, 
-                                             0, 
-                                             vectors, 
-                                             delays,
-                                             external_files, 
-                                             current, 
-                                             wait_queue);
- 
-     input_file.close();
- 
-     write_output(execution, "execution.txt");
-     write_output(system_status, "system_status.txt");
- 
-     return 0;
- }
+int main(int argc, char** argv) {
+
+    //vectors is a C++ std::vector of strings that contain the address of the ISR
+    //delays  is a C++ std::vector of ints that contain the delays of each device
+    //the index of these elemens is the device number, starting from 0
+    //external_files is a C++ std::vector of the struct 'external_file'. Check the struct in 
+    //interrupt.hpp to know more.
+    auto [vectors, delays, external_files] = parse_args(argc, argv);
+    std::ifstream input_file(argv[1]);
+
+    //Just a sanity check to know what files you have
+    print_external_files(external_files);
+
+    //Make initial PCB (notice how partition is not assigned yet)
+    PCB current(0, -1, "init", 1, -1);
+    //Update memory (partition is assigned here, you must implement this function)
+    if(!allocate_memory(&current)) {
+        std::cerr << "ERROR! Memory allocation failed!" << std::endl;
+    }
+
+    std::vector<PCB> wait_queue;
+
+    /******************ADD YOUR VARIABLES HERE*************************/
+
+
+    /******************************************************************/
+
+    //Converting the trace file into a vector of strings.
+    std::vector<std::string> trace_file;
+    std::string trace;
+    while(std::getline(input_file, trace)) {
+        trace_file.push_back(trace);
+    }
+
+    auto [execution, system_status, _] = simulate_trace(   trace_file, 
+                                            0, 
+                                            vectors, 
+                                            delays,
+                                            external_files, 
+                                            current, 
+                                            wait_queue);
+
+    input_file.close();
+
+    write_output(execution, "execution.txt");
+    write_output(system_status, "system_status.txt");
+
+    return 0;
+}
